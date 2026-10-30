@@ -1,0 +1,8 @@
+backend/config/config.php
+backend/logs/*
+!backend/logs/.gitignore
+backend/vendor/
+vendor/
+.env
+.DS_Store
+Thumbs.db
