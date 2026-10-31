@@ -1,41 +1,39 @@
 # GrbZem
 
-GrbZem is a responsive single-page storefront concept for browsing Premier League home shirts, planning an order, and managing a customer account. This Milestone 1 version is a static frontend prototype; it does not connect to a backend or database yet.
+GrbZem is a responsive single-page storefront concept for Premier League home shirts. Milestone 2 adds a MySQL database and a PDO DAO layer to the static frontend.
 
-The storefront name is **GrbZem**. The visual theme uses navy, ivory, and pitch green. The project is being developed for IT 2001 Web Programming at International Burch University by Eman Husejnovic.
+The project is for IT 2001 Web Programming at International Burch University. The frontend remains a static prototype; it is not connected to the backend yet.
 
-## Milestone 1 scope
+## Milestone 2 database
 
-- Responsive static SPA with home, shop, kit details, cart, checkout, matchday, login, registration, account, and admin views. The shop preview lists home shirts for the 20 clubs in 2026/27 and the three clubs relegated after 2025/26.
-- Draft ERD for the planned relational database.
-- Planned public data feature: a matchday section on the home page and a dedicated Matchday view for football fixtures or league information from a relevant external API. The provider will be selected before that milestone is implemented.
+The schema is in `database/grbzem.sql`. It creates the `grbzem` database, six related tables, and sample rows:
 
-## Planned entities and relationships
+- `users` can place many `orders` and write many `reviews`.
+- `categories` can contain many `kits`.
+- `orders` contain many `order_items`.
+- Each `order_item` refers to one `kit` and stores its quantity and purchase price.
+- Each `review` belongs to one `user` and one `kit`.
 
-- `users` have a `customer` or `admin` role and may place many orders and write many reviews.
-- `categories` contain many `kits`.
-- `users` place many `orders`; each order contains one or more `order_items`.
-- Each `order_item` refers to one kit and stores the quantity and price at the time of ordering.
-- `reviews` connect a user to a kit and contain a rating and comment.
+The database uses primary keys, foreign keys, unique values, and data constraints. `backend/dao/BaseDao.php` provides shared PDO CRUD methods. Each table has a DAO class in `backend/dao/`.
 
-See [docs/ERD.md](docs/ERD.md) for the draft diagram and planned fields.
+## Roles and test data
 
-## Roles and test accounts
-
-Planned roles are `customer` and `admin`. Test accounts will be documented after authentication is implemented. This static prototype has no real accounts or passwords.
+The planned roles are `customer` and `admin`. The SQL file includes sample rows for both roles; these rows are for database testing and are not login accounts. Authentication and usable test accounts are planned for a later milestone.
 
 ## Run locally
 
-1. Place the project folder under XAMPP `htdocs`.
-2. Start Apache in the XAMPP Control Panel.
-3. Open `http://localhost/WebProgrammingEman/frontend/` in a browser.
+1. Start Apache and MySQL in the XAMPP Control Panel.
+2. Import `database/grbzem.sql` with phpMyAdmin, or run `C:\xampp\mysql\bin\mysql.exe -u root < database\grbzem.sql` from the project folder.
+3. Copy `backend/config/config.example.php` to `backend/config/config.php`. The example settings match a default local XAMPP MySQL installation. Change the local values if your database uses different credentials.
+4. Open `http://localhost/WebProgrammingEman/frontend/` to view the static storefront.
+5. Run `C:\xampp\php\php.exe backend\dao\test.php` from the project folder to test the DAO classes. The test uses a transaction and rolls back its changes.
 
-Milestone 1 does not require a database import or backend configuration file. Later milestones will add a MySQL `.sql` file with sample data and a local `backend/config/config.php`, copied from `backend/config/config.example.php`. The real configuration file, logs, and Composer `vendor` directory must stay out of Git.
+The local `backend/config/config.php`, logs, and Composer `vendor` directory are excluded from Git. Keep real database credentials out of `config.example.php`.
 
-## API documentation
+## Matchday feature
 
-OpenAPI and Swagger documentation will be added with the API in a later milestone.
+The home page and Matchday view show where football fixtures or league information from an external API are planned. The API provider and backend connection will be selected and implemented in a later milestone.
 
-## Deployed application
+## API documentation and deployment
 
-Deployment is planned for a later milestone. The live application link will be added here after deployment.
+OpenAPI/Swagger documentation, deployed application links, and working login test accounts will be added in later milestones.
