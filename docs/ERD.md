@@ -1,30 +1,83 @@
-# Football Kits Shop Draft ERD
+# GrbZem Database Schema
 
-This is the Milestone 1 database plan. The schema, keys, constraints, sample rows, and SQL export are planned for Milestone 2.
+This document describes the Milestone 2 MySQL schema. The executable schema and sample rows are in `database/grbzem.sql`.
 
-```text
-users 1 ───────< orders 1 ───────< order_items >─────── 1 kits >─────── 1 categories
-  │                                      │                  │
-  └────────────< reviews >───────────────┴──────────────────┘
-```
+## Entities and fields
 
-## Planned entities
+### `users`
 
-| Entity | Planned fields | Relationships |
+| Field | Type | Rules |
 | --- | --- | --- |
-| `users` | id, first_name, last_name, email, password_hash, role, created_at | One user can place many orders and write many reviews. `role` is planned as `customer` or `admin`. |
-| `categories` | id, name, description | One category can contain many kits. |
-| `kits` | id, category_id, team_name, season, kit_type, name, description, size, price, stock_quantity, image_path | Each kit belongs to one category and can appear in many order items and reviews. |
-| `orders` | id, user_id, status, total_amount, created_at | Each order belongs to one user and contains many order items. |
-| `order_items` | id, order_id, kit_id, quantity, unit_price | Each order item belongs to one order and one kit. `unit_price` preserves the price at purchase time. |
-| `reviews` | id, user_id, kit_id, rating, comment, created_at | Each review belongs to one user and one kit. |
+| `id` | INT | Primary key, auto-increment |
+| `first_name` | VARCHAR(100) | Required |
+| `last_name` | VARCHAR(100) | Required |
+| `email` | VARCHAR(150) | Required, unique |
+| `password_hash` | VARCHAR(255) | Required; stores a password hash |
+| `role` | ENUM('customer', 'admin') | Required, defaults to `customer` |
+| `created_at` | TIMESTAMP | Defaults to the current time |
 
-## Relationship summary
+### `categories`
 
-- `categories.id` → `kits.category_id` is one-to-many.
-- `users.id` → `orders.user_id` is one-to-many.
-- `orders.id` → `order_items.order_id` is one-to-many.
-- `kits.id` → `order_items.kit_id` is one-to-many.
-- `users.id` → `reviews.user_id` and `kits.id` → `reviews.kit_id` are each one-to-many.
+| Field | Type | Rules |
+| --- | --- | --- |
+| `id` | INT | Primary key, auto-increment |
+| `name` | VARCHAR(100) | Required, unique |
+| `description` | TEXT | Optional |
 
-All entities are planned to have an integer `id` primary key. Foreign keys and suitable constraints will be finalized with the Milestone 2 schema.
+### `kits`
+
+| Field | Type | Rules |
+| --- | --- | --- |
+| `id` | INT | Primary key, auto-increment |
+| `category_id` | INT | Required foreign key to `categories.id` |
+| `team_name` | VARCHAR(100) | Required |
+| `season` | VARCHAR(20) | Required |
+| `kit_type` | VARCHAR(40) | Required |
+| `name` | VARCHAR(150) | Required |
+| `description` | TEXT | Optional |
+| `size` | VARCHAR(10) | Required |
+| `price` | DECIMAL(10,2) | Required; zero or greater |
+| `stock_quantity` | INT | Required; defaults to 0 and cannot be negative |
+| `image_path` | VARCHAR(255) | Required |
+
+### `orders`
+
+| Field | Type | Rules |
+| --- | --- | --- |
+| `id` | INT | Primary key, auto-increment |
+| `user_id` | INT | Required foreign key to `users.id` |
+| `status` | ENUM('pending', 'paid', 'shipped', 'delivered', 'cancelled') | Required, defaults to `pending` |
+| `total_amount` | DECIMAL(10,2) | Required; zero or greater |
+| `created_at` | TIMESTAMP | Defaults to the current time |
+
+### `order_items`
+
+| Field | Type | Rules |
+| --- | --- | --- |
+| `id` | INT | Primary key, auto-increment |
+| `order_id` | INT | Required foreign key to `orders.id` |
+| `kit_id` | INT | Required foreign key to `kits.id` |
+| `quantity` | INT | Required; greater than zero |
+| `unit_price` | DECIMAL(10,2) | Required; zero or greater |
+
+### `reviews`
+
+| Field | Type | Rules |
+| --- | --- | --- |
+| `id` | INT | Primary key, auto-increment |
+| `user_id` | INT | Required foreign key to `users.id` |
+| `kit_id` | INT | Required foreign key to `kits.id` |
+| `rating` | TINYINT | Required; between 1 and 5 |
+| `comment` | TEXT | Optional |
+| `created_at` | TIMESTAMP | Defaults to the current time |
+
+## Relationships
+
+- One category can have many kits; each kit belongs to one category.
+- One user can have many orders; each order belongs to one user.
+- One order can have many order items; each order item belongs to one order.
+- One kit can appear in many order items; each order item refers to one kit.
+- One user can write many reviews; each review belongs to one user.
+- One kit can have many reviews; each review belongs to one kit.
+
+Foreign keys use `ON DELETE RESTRICT` so a referenced row cannot be deleted while related records exist. The schema also enforces unique user emails and category names, allowed role and order-status values, and numeric checks for kit stock, prices, order totals, quantities, and review ratings.
