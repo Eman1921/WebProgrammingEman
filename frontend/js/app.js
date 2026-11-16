@@ -67,6 +67,58 @@ function getCurrentKit() {
     return window.location.hash.slice(1).toLowerCase().split("/")[1];
 }
 
+function renderWeatherForecast(container, forecast) {
+    container.replaceChildren();
+
+    forecast.days.forEach((day) => {
+        const card = document.createElement("article");
+        card.className = "weather-day";
+
+        const date = document.createElement("p");
+        date.textContent = new Date(`${day.date}T12:00:00`).toLocaleDateString("en-GB", {
+            weekday: "short",
+            day: "numeric",
+            month: "short"
+        });
+
+        const description = document.createElement("span");
+        description.textContent = day.description;
+
+        const temperatures = document.createElement("strong");
+        temperatures.textContent = `${Math.round(day.temperature_max_c)}° / ${Math.round(day.temperature_min_c)}°C`;
+
+        card.append(date, description, temperatures);
+        container.append(card);
+    });
+}
+
+async function loadWeatherForecast(form) {
+    const panel = form.closest(".matchday-panel");
+    const message = panel.querySelector("[data-weather-message]");
+    const results = panel.querySelector("[data-weather-results]");
+    const city = form.elements.city.value.trim();
+    const url = new URL("../backend/weather/forecast", window.location.href);
+    url.searchParams.set("city", city);
+    url.searchParams.set("days", "5");
+
+    message.textContent = "Loading the forecast…";
+    results.replaceChildren();
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || "The forecast could not be loaded.");
+        }
+
+        message.textContent = `${data.city}${data.country ? `, ${data.country}` : ""} · daily forecast`;
+        renderWeatherForecast(results, data);
+    } catch (error) {
+        message.textContent = error.message || "The forecast is unavailable. Please try again later.";
+        results.replaceChildren();
+    }
+}
+
 function updateKitDetails() {
     const kit = kits[getCurrentKit()] || kits["man-city"];
     const image = appView.querySelector("[data-kit-image]");
@@ -180,6 +232,15 @@ document.addEventListener("submit", (event) => {
     message.textContent = "This form is a static preview and is not connected yet.";
     event.target.querySelector(".form-submit-message")?.remove();
     event.target.append(message);
+});
+
+document.addEventListener("submit", (event) => {
+    if (!event.target.matches(".weather-form")) {
+        return;
+    }
+
+    event.preventDefault();
+    loadWeatherForecast(event.target);
 });
 
 loadView(getCurrentView());

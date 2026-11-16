@@ -1554,6 +1554,94 @@ h2 em {
     line-height: 1.7;
 }
 
+.weather-form {
+    width: 100%;
+    margin-top: 18px;
+}
+
+.weather-form label {
+    display: block;
+    margin-bottom: 6px;
+    color: rgba(244, 241, 232, 0.72);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.weather-form > div {
+    display: flex;
+    width: 100%;
+    gap: 6px;
+}
+
+.weather-form input {
+    min-width: 0;
+    flex: 1;
+    padding: 9px 10px;
+    border: 1px solid rgba(244, 241, 232, 0.3);
+    border-radius: 0;
+    color: var(--paper);
+    background: transparent;
+    font: inherit;
+    font-size: 10px;
+}
+
+.weather-form input:focus {
+    outline: 2px solid var(--pitch);
+    outline-offset: 2px;
+}
+
+.weather-form button {
+    padding: 9px 10px;
+    border: 0;
+    color: #17251f;
+    background: var(--pitch);
+    font: inherit;
+    font-size: 9px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.weather-form button span {
+    margin-left: 4px;
+}
+
+.weather-message {
+    min-height: 28px;
+    margin: 11px 0 8px;
+    color: rgba(244, 241, 232, 0.72);
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+.weather-results {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+}
+
+.weather-day {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px;
+    border: 1px solid rgba(244, 241, 232, 0.22);
+}
+
+.weather-day p,
+.weather-day span {
+    margin: 0;
+    color: rgba(244, 241, 232, 0.72);
+    font-size: 8px;
+}
+
+.weather-day strong {
+    color: var(--paper);
+    font-size: 11px;
+}
+
 .panel-dark > p:not(.eyebrow) {
     color: rgba(244, 241, 232, 0.65);
 }

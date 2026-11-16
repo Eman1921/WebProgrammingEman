@@ -1,12 +1,10 @@
 # GrbZem
 
-GrbZem is a responsive single-page storefront concept for Premier League home shirts. Milestone 2 adds a MySQL database and a PDO DAO layer to the static frontend.
+GrbZem is a responsive single-page storefront concept for Premier League home shirts. Milestone 3 adds a PHP REST API with business services, FlightPHP routes, OpenAPI documentation, and a Matchday weather feature powered by Open-Meteo.
 
-The project is for IT 2001 Web Programming at International Burch University. The frontend remains a static prototype; it is not connected to the backend yet.
+## Database
 
-## Milestone 2 database
-
-The schema is in `database/grbzem.sql`. It creates the `grbzem` database, six related tables, and sample rows:
+Import `database/grbzem.sql` to create the MySQL database and six related tables:
 
 - `users` can place many `orders` and write many `reviews`.
 - `categories` can contain many `kits`.
@@ -14,26 +12,27 @@ The schema is in `database/grbzem.sql`. It creates the `grbzem` database, six re
 - Each `order_item` refers to one `kit` and stores its quantity and purchase price.
 - Each `review` belongs to one `user` and one `kit`.
 
-The database uses primary keys, foreign keys, unique values, and data constraints. `backend/dao/BaseDao.php` provides shared PDO CRUD methods. Each table has a DAO class in `backend/dao/`.
+The schema uses primary and foreign keys, unique values, and data constraints. DAO classes are in `backend/dao/`; entity services in `backend/services/` validate input and apply relationship rules before calling DAOs.
 
-## Roles and test data
-
-The planned roles are `customer` and `admin`. The SQL file includes sample rows for both roles; these rows are for database testing and are not login accounts. Authentication and usable test accounts are planned for a later milestone.
-
-## Run locally
+## Run locally with XAMPP
 
 1. Start Apache and MySQL in the XAMPP Control Panel.
 2. Import `database/grbzem.sql` with phpMyAdmin, or run `C:\xampp\mysql\bin\mysql.exe -u root < database\grbzem.sql` from the project folder.
-3. Copy `backend/config/config.example.php` to `backend/config/config.php`. The example settings match a default local XAMPP MySQL installation. Change the local values if your database uses different credentials.
-4. Open `http://localhost/WebProgrammingEman/frontend/` to view the static storefront.
-5. Run `C:\xampp\php\php.exe backend\dao\test.php` from the project folder to test the DAO classes. The test uses a transaction and rolls back its changes.
+3. Copy `backend/config/config.example.php` to `backend/config/config.php`. The example settings use the default local XAMPP database. Keep `config.php` local.
+4. In the `backend` folder, run `composer install` to install FlightPHP and swagger-php from `composer.lock`.
+5. Open the storefront at `http://localhost/WebProgrammingEman/frontend/`.
+6. Open the API at `http://localhost/WebProgrammingEman/backend/` and the interactive API documentation at `http://localhost/WebProgrammingEman/backend/public/v1/docs/`.
 
-The local `backend/config/config.php`, logs, and Composer `vendor` directory are excluded from Git. Keep real database credentials out of `config.example.php`.
+The API supports list, read-by-id, create, update, and delete routes for users, categories, kits, orders, order items, and reviews. Requests and responses use JSON. Successful creation returns 201; validation failures return 400; missing records or routes return 404; unexpected server errors return 500.
 
-## Matchday feature
+## Matchday weather
 
-The home page and Matchday view show where football fixtures or league information from an external API are planned. The API provider and backend connection will be selected and implemented in a later milestone.
+The Matchday view requests a city forecast from the GrbZem backend. The backend calls the Open-Meteo geocoding and forecast services with connection and total timeouts, checks the HTTP response and JSON data, and returns a friendly error if the service is unavailable. Open-Meteo does not require an API key. Its endpoint URLs and timeout are in the configuration class; no external key or secret is committed.
 
-## API documentation and deployment
+Try the endpoint with `http://localhost/WebProgrammingEman/backend/weather/forecast?city=Sarajevo&days=5`. The `city` parameter accepts 2–50 characters; `days` is optional and accepts 1–16.
 
-OpenAPI/Swagger documentation, deployed application links, and working login test accounts will be added in later milestones.
+## Roles and test data
+
+The planned roles are `customer` and `admin`. The SQL file includes sample users, but they are database records rather than login accounts. Authentication and role-based access are scheduled for Milestone 4.
+
+The Matchday weather feature is connected to the backend. Connecting entity management throughout the storefront is planned for Milestone 4. Deployment and a live link are planned for Milestone 5.

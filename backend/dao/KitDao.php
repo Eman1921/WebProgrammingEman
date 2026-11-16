@@ -19,4 +19,12 @@ class KitDao extends BaseDao
             'image_path'
         ]);
     }
+
+    public function get_by_category(int $category_id): array
+    {
+        return $this->query(
+            'SELECT * FROM kits WHERE category_id = :category_id ORDER BY id',
+            ['category_id' => $category_id]
+        );
+    }
 }

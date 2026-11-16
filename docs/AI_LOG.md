@@ -29,3 +29,17 @@
 
 1. ChatGPT’s first DAO test script claimed to test delete operations, but it did not actually call each DAO’s delete method. I noticed the mismatch while reviewing the script and added delete checks for all six DAOs. The corrected test passed.
 2. ChatGPT initially treated the lab example’s `backend/rest/dao/` path as mandatory. I noticed the project structure uses `backend/dao/` and corrected the file placement before testing.
+
+## Milestone 3
+
+### Tools and tasks
+
+- I set the scope to Milestone 3, required the work to use only the files in `C:\Users\saraj\Desktop\Assignment 3`, and requested local testing with XAMPP on `ass3`.
+- OpenAI Codex desktop assistant read the supplied Milestone 3 requirements and course files, he helped me to add validation services and CRUD routes for the six database entities, added shared JSON error handling, documented the API with OpenAPI attributes and Swagger UI, and connected the Matchday weather panel to an Open-Meteo endpoint. It installed the course dependencies and exercised the API through XAMPP.
+- Half of the things for this milestone was done by me and half with OpenAI Codex
+
+### Where the assistant was wrong
+
+1. The first Composer install failed because the XAMPP command-line PHP had its ZIP extension disabled. I noticed Composer’s error, enabled the ZIP extension for that install command, and reran it successfully.
+2. The first user update validation compared the submitted email with existing users without excluding the user being updated. I noticed that an unchanged email would be rejected, changed the validation to ignore the current user id, and verified that a user update with the same email succeeds.
+3. The first weather form handler looked for its status message inside the form, while the page markup places the message next to the form. I noticed the mismatch while reviewing the page and script, then changed the handler to find the message in the surrounding panel.
