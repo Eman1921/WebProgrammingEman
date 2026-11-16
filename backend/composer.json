@@ -1,0 +1,12 @@
+{
+    "name": "grbzem/backend",
+    "description": "GrbZem REST API",
+    "type": "project",
+    "require": {
+        "php": ">=8.2",
+        "ext-curl": "*",
+        "ext-pdo": "*",
+        "flightphp/core": "^3.19",
+        "zircote/swagger-php": "^6.12"
+    }
+}
